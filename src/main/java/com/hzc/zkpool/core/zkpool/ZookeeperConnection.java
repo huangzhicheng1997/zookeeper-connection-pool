@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Date: 2020/05/28  20:18
  * @Description:
  */
-public class ZookeeperConnection {
+public class ZookeeperConnection{
 
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -180,11 +180,7 @@ public class ZookeeperConnection {
         byte[] data = zooKeeper.getData(path, watcher, stat);
         return zookeeperSerializer.deSerializer(data, clazz);
     }
-
-    public List<String> getChildren(String path, Watcher watcher) throws KeeperException, InterruptedException {
-        return zooKeeper.getChildren(path, watcher);
-    }
-
+    
 
     /**
      * 异步获取数据
@@ -233,6 +229,97 @@ public class ZookeeperConnection {
         byte[] data = zooKeeper.getData(path, false, stat);
         return zookeeperSerializer.deSerializer(data, clazz);
     }
+
+
+    
+    public List<ACL> getACL(String path, Stat stat) throws KeeperException, InterruptedException {
+        return zooKeeper.getACL(path, stat);
+    }
+
+    
+    public void getACL(String path, Stat stat, AsyncCallback.ACLCallback cb, Object ctx) {
+        zooKeeper.getACL(path, stat, cb, ctx);
+    }
+
+    
+    public Stat setACL(String path, List<ACL> acl, int version) throws KeeperException, InterruptedException {
+        return zooKeeper.setACL(path, acl, version);
+    }
+
+    
+    public void setACL(String path, List<ACL> acl, int version, AsyncCallback.StatCallback cb, Object ctx) {
+        zooKeeper.setACL(path, acl, version, cb, ctx);
+    }
+
+    
+    public List<String> getChildren(String path, Watcher watcher) throws KeeperException, InterruptedException {
+        return zooKeeper.getChildren(path, watcher);
+    }
+
+    
+    public List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
+        return zooKeeper.getChildren(path, watch);
+    }
+
+    
+    public void getChildren(String path, Watcher watcher, AsyncCallback.ChildrenCallback cb, Object ctx) {
+        zooKeeper.getChildren(path, watcher, cb, ctx);
+    }
+
+    
+    public void getChildren(String path, boolean watch, AsyncCallback.ChildrenCallback cb, Object ctx) {
+        zooKeeper.getChildren(path, watch, cb, ctx);
+    }
+
+    
+    public List<String> getChildren(String path, Watcher watcher, Stat stat) throws KeeperException, InterruptedException {
+        return zooKeeper.getChildren(path, watcher, stat);
+    }
+
+    
+    public List<String> getChildren(String path, boolean watch, Stat stat) throws KeeperException, InterruptedException {
+        return zooKeeper.getChildren(path, watch, stat);
+    }
+    
+
+    
+    public void getChildren(String path, Watcher watcher, AsyncCallback.Children2Callback cb, Object ctx) {
+        zooKeeper.getChildren(path, watcher, cb, ctx);
+    }
+
+    
+    public void getChildren(String path, boolean watch, AsyncCallback.Children2Callback cb, Object ctx) {
+        zooKeeper.getChildren(path, watch, cb, ctx);
+    }
+    
+
+    
+    public long getSessionId() {
+        return zooKeeper.getSessionId();
+    }
+
+    
+    public byte[] getSessionPasswd() {
+        return zooKeeper.getSessionPasswd();
+    }
+
+    
+    public int getSessionTimeout() {
+        return zooKeeper.getSessionTimeout();
+    }
+
+    public List<OpResult> multi(Iterable<Op> ops) throws InterruptedException, KeeperException {
+        return zooKeeper.multi(ops);
+    }
+
+    public void addAuthInfo(String scheme, byte[] auth) {
+        zooKeeper.addAuthInfo(scheme, auth);
+    }
+
+    public Transaction transaction() {
+        return zooKeeper.transaction();
+    }
+
 
 
     /**
