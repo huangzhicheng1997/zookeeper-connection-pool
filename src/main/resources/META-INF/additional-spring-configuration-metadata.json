@@ -1,0 +1,16 @@
+{
+  "hints": [
+    {
+      "name": "zookeeper-pool.zookeeperSerializerClassName",
+      "providers": [
+        {
+          "name": "class-reference",
+          "parameters": {
+            "target": "com.hzc.zkpool.serializer.ZookeeperSerializer",
+            "concrete": true
+          }
+        }
+      ]
+    }
+  ]
+}

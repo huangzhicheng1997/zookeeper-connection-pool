@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.hzc.zkpool.autoconfig.ZookeeperConnectionPoolConfig,com.hzc.zkpool.autoconfig.ZkPoolPropertiesConfig

@@ -1,0 +1,35 @@
+{
+  "groups": [
+    {
+      "name": "zookeeper-pool",
+      "type": "com.hzc.zkpool.autoconfig.ZkPoolProperties",
+      "sourceType": "com.hzc.zkpool.autoconfig.ZkPoolProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "zookeeper-pool.maxConnection",
+      "type": "java.lang.Integer",
+      "defaultValue": 5,
+      "sourceType": "com.hzc.zkpool.autoconfig.ZkPoolProperties"
+    },
+    {
+      "name": "zookeeper-pool.minConnection",
+      "type": "java.lang.Integer",
+      "defaultValue": 1,
+      "sourceType": "com.hzc.zkpool.autoconfig.ZkPoolProperties"
+    },
+    {
+      "name": "zookeeper-pool.sessionTimeout",
+      "type": "java.lang.Integer",
+      "defaultValue": 30,
+      "sourceType": "com.hzc.zkpool.autoconfig.ZkPoolProperties"
+    },
+    {
+      "name": "zookeeper-pool.zookeeperSerializerClassName",
+      "type": "com.hzc.zkpool.serializer.ZookeeperSerializer",
+      "sourceType": "com.hzc.zkpool.autoconfig.ZkPoolProperties"
+    }
+  ],
+  "hints": []
+}
