@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Date: 2020/05/28  20:18
  * @Description:
  */
-public class ZookeeperConnection{
+public class ZookeeperConnection {
 
     private final CountDownLatch countDownLatch = new CountDownLatch(1);
 
@@ -65,7 +65,7 @@ public class ZookeeperConnection{
         Watcher connectingWatcher = event -> {
             if (event.getState().equals(Watcher.Event.KeeperState.SyncConnected)) {
                 countDownLatch.countDown();
-                ZkPoolLogger.info("zkClient-{} is connected",connectionSeq);
+                ZkPoolLogger.info("zkClient-{} is connected", connectionSeq);
             }
         };
         this.zooKeeper = new ZooKeeper(znodeAddr, sessionTimeout, connectingWatcher);
@@ -77,7 +77,7 @@ public class ZookeeperConnection{
     }
 
     /**
-     * 创建节点
+     * 创建节点,递归创建
      *
      * @param path       路径
      * @param data       节点的数据
@@ -89,7 +89,45 @@ public class ZookeeperConnection{
      * @throws IOException
      */
     public String create(String path, Object data, List<ACL> acl, CreateMode createMode) throws KeeperException, InterruptedException, IOException {
-        return zooKeeper.create(path, zookeeperSerializer.serializer(data), acl, createMode);
+        //获取根目录
+        if (!path.startsWith("/")) {
+            throw new IllegalArgumentException("path illegal");
+        }
+
+        String rootPath = "/" + path.split("/")[1];
+
+        return doCreate(rootPath, path, data, acl, createMode);
+    }
+
+
+    private String doCreate(String path, String sourcePath, Object data, List<ACL> acl, CreateMode createMode) throws IOException, KeeperException, InterruptedException {
+
+        if (path.equals(sourcePath)) {
+            return zooKeeper.create(path, zookeeperSerializer.serializer(data), acl, createMode);
+        }
+
+        try {
+            zooKeeper.create(path, zookeeperSerializer.serializer(data), acl, CreateMode.PERSISTENT);
+        }catch (KeeperException.NodeExistsException ignored){
+
+        }
+        return doCreate(nextDir(path, sourcePath), sourcePath, null, acl, createMode);
+    }
+
+
+    private String nextDir(String path, String sourcePath) {
+        String[] dirs = sourcePath.split("/");
+        StringBuilder dest = new StringBuilder();
+        for (int i = 0; i < dirs.length; i++) {
+            if (i != 0) {
+                dest.append("/");
+                dest.append(dirs[i]);
+            }
+            if (dest.toString().equals(path)) {
+                return path + "/" + dirs[i + 1];
+            }
+        }
+        return path;
     }
 
     /**
@@ -104,7 +142,8 @@ public class ZookeeperConnection{
      * @return
      * @throws IOException
      */
-    public void create(String path, Object data, List<ACL> acl, CreateMode createMode, AsyncCallback.StringCallback stringCallback, Object ctx) throws IOException {
+    public void create(String path, Object data, List<ACL> acl, CreateMode
+            createMode, AsyncCallback.StringCallback stringCallback, Object ctx) throws IOException {
         zooKeeper.create(path, zookeeperSerializer.serializer(data), acl, createMode, stringCallback, ctx);
     }
 
@@ -121,7 +160,8 @@ public class ZookeeperConnection{
     }
 
 
-    public void deleteNode(String path, int version, AsyncCallback.VoidCallback voidCallback, Object ctx) throws KeeperException, InterruptedException {
+    public void deleteNode(String path, int version, AsyncCallback.VoidCallback voidCallback, Object ctx) throws
+            KeeperException, InterruptedException {
         zooKeeper.delete(path, version, voidCallback, ctx);
     }
 
@@ -153,12 +193,14 @@ public class ZookeeperConnection{
     }
 
 
-    public Stat setData(String path, Object data, int version) throws IOException, KeeperException, InterruptedException {
+    public Stat setData(String path, Object data, int version) throws
+            IOException, KeeperException, InterruptedException {
 
         return zooKeeper.setData(path, zookeeperSerializer.serializer(data), version);
     }
 
-    public void setData(String path, Object data, int version, AsyncCallback.StatCallback statCallback, Object ctx) throws IOException, KeeperException, InterruptedException {
+    public void setData(String path, Object data, int version, AsyncCallback.StatCallback statCallback, Object ctx) throws
+            IOException, KeeperException, InterruptedException {
         zooKeeper.setData(path, zookeeperSerializer.serializer(data), version, statCallback, ctx);
     }
 
@@ -176,11 +218,12 @@ public class ZookeeperConnection{
      * @throws InterruptedException
      * @throws IOException
      */
-    public <T> T getData(String path, Watcher watcher, Stat stat, Class<T> clazz) throws KeeperException, InterruptedException, IOException {
+    public <T> T getData(String path, Watcher watcher, Stat stat, Class<T> clazz) throws
+            KeeperException, InterruptedException, IOException {
         byte[] data = zooKeeper.getData(path, watcher, stat);
         return zookeeperSerializer.deSerializer(data, clazz);
     }
-    
+
 
     /**
      * 异步获取数据
@@ -193,7 +236,8 @@ public class ZookeeperConnection{
      * @throws InterruptedException
      * @throws IOException
      */
-    public void getDataAsync(String path, Watcher watcher, AsyncCallback.DataCallback dataCallback, Object ctx) throws KeeperException, InterruptedException, IOException {
+    public void getDataAsync(String path, Watcher watcher, AsyncCallback.DataCallback dataCallback, Object ctx) throws
+            KeeperException, InterruptedException, IOException {
         zooKeeper.getData(path, watcher, dataCallback, ctx);
     }
 
@@ -209,7 +253,8 @@ public class ZookeeperConnection{
      * @throws InterruptedException
      * @throws IOException
      */
-    public <T> T getDataSimple(String path, Class<T> clazz) throws KeeperException, InterruptedException, IOException {
+    public <T> T getDataSimple(String path, Class<T> clazz) throws
+            KeeperException, InterruptedException, IOException {
         byte[] data = zooKeeper.getData(path, false, null);
         return zookeeperSerializer.deSerializer(data, clazz);
     }
@@ -225,85 +270,85 @@ public class ZookeeperConnection{
      * @throws InterruptedException
      * @throws IOException
      */
-    public <T> T getData(String path, Stat stat, Class<T> clazz) throws KeeperException, InterruptedException, IOException {
+    public <T> T getData(String path, Stat stat, Class<T> clazz) throws
+            KeeperException, InterruptedException, IOException {
         byte[] data = zooKeeper.getData(path, false, stat);
         return zookeeperSerializer.deSerializer(data, clazz);
     }
 
 
-    
     public List<ACL> getACL(String path, Stat stat) throws KeeperException, InterruptedException {
         return zooKeeper.getACL(path, stat);
     }
 
-    
+
     public void getACL(String path, Stat stat, AsyncCallback.ACLCallback cb, Object ctx) {
         zooKeeper.getACL(path, stat, cb, ctx);
     }
 
-    
+
     public Stat setACL(String path, List<ACL> acl, int version) throws KeeperException, InterruptedException {
         return zooKeeper.setACL(path, acl, version);
     }
 
-    
+
     public void setACL(String path, List<ACL> acl, int version, AsyncCallback.StatCallback cb, Object ctx) {
         zooKeeper.setACL(path, acl, version, cb, ctx);
     }
 
-    
+
     public List<String> getChildren(String path, Watcher watcher) throws KeeperException, InterruptedException {
         return zooKeeper.getChildren(path, watcher);
     }
 
-    
+
     public List<String> getChildren(String path, boolean watch) throws KeeperException, InterruptedException {
         return zooKeeper.getChildren(path, watch);
     }
 
-    
+
     public void getChildren(String path, Watcher watcher, AsyncCallback.ChildrenCallback cb, Object ctx) {
         zooKeeper.getChildren(path, watcher, cb, ctx);
     }
 
-    
+
     public void getChildren(String path, boolean watch, AsyncCallback.ChildrenCallback cb, Object ctx) {
         zooKeeper.getChildren(path, watch, cb, ctx);
     }
 
-    
-    public List<String> getChildren(String path, Watcher watcher, Stat stat) throws KeeperException, InterruptedException {
+
+    public List<String> getChildren(String path, Watcher watcher, Stat stat) throws
+            KeeperException, InterruptedException {
         return zooKeeper.getChildren(path, watcher, stat);
     }
 
-    
-    public List<String> getChildren(String path, boolean watch, Stat stat) throws KeeperException, InterruptedException {
+
+    public List<String> getChildren(String path, boolean watch, Stat stat) throws
+            KeeperException, InterruptedException {
         return zooKeeper.getChildren(path, watch, stat);
     }
-    
 
-    
+
     public void getChildren(String path, Watcher watcher, AsyncCallback.Children2Callback cb, Object ctx) {
         zooKeeper.getChildren(path, watcher, cb, ctx);
     }
 
-    
+
     public void getChildren(String path, boolean watch, AsyncCallback.Children2Callback cb, Object ctx) {
         zooKeeper.getChildren(path, watch, cb, ctx);
     }
-    
 
-    
+
     public long getSessionId() {
         return zooKeeper.getSessionId();
     }
 
-    
+
     public byte[] getSessionPasswd() {
         return zooKeeper.getSessionPasswd();
     }
 
-    
+
     public int getSessionTimeout() {
         return zooKeeper.getSessionTimeout();
     }
@@ -320,7 +365,9 @@ public class ZookeeperConnection{
         return zooKeeper.transaction();
     }
 
-
+    public void register(Watcher watcher) {
+        zooKeeper.register(watcher);
+    }
 
     /**
      * 安全关闭（检测是否处于空闲状态）

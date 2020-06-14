@@ -1,12 +1,14 @@
 package com.hzc.zkpool.autoconfig;
 
 
+import com.hzc.zkpool.autoconfig.annotation.ZkClientSwitch;
 import com.hzc.zkpool.core.zkpool.ZookeeperConnection;
 import com.hzc.zkpool.core.zkpool.ZookeeperConnectionPool;
 import com.hzc.zkpool.exception.ZkPoolInitException;
 import com.hzc.zkpool.serializer.ZookeeperSerializer;
 import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,6 +27,7 @@ import java.io.IOException;
 @Configuration
 @EnableConfigurationProperties(ZkPoolProperties.class)
 @ConditionalOnMissingBean({ZookeeperConnectionPool.class, ZooKeeper.class, ZookeeperConnection.class})
+@ConditionalOnBean(ZkClientSwitch.class)
 public class ZookeeperConnectionPoolConfig {
 
     @Autowired

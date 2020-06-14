@@ -1,7 +1,15 @@
 package com.hzc.zkpool.logger;
 
+import com.hzc.zkpool.core.zkpool.WatcherAdaptor;
+import com.hzc.zkpool.core.zkpool.ZookeeperConnection;
+import com.hzc.zkpool.core.zkpool.ZookeeperConnectionPool;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author: hzc
@@ -26,5 +34,12 @@ public class ZkPoolLogger {
     }
 
 
+    public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
+        ZookeeperConnectionPool zookeeperConnectionPool=new ZookeeperConnectionPool(1,1,"localhost:2181",3000);
+        ZookeeperConnection connection = zookeeperConnectionPool.getConnection();
+        String sada = connection.create("/data/xx/a", "sada", ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL);
+
+      TimeUnit.SECONDS.sleep(10000);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.hzc.zkpool.core.zkpool;
 
+import com.sun.istack.internal.Nullable;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 
@@ -15,8 +16,9 @@ public abstract class WatcherAdaptor implements Watcher {
      */
     private Object attachment;
 
-    public WatcherAdaptor(Object attachment) {
+    public Watcher setAttachment(Object attachment) {
         this.attachment = attachment;
+        return this;
     }
 
     @Override
@@ -24,5 +26,5 @@ public abstract class WatcherAdaptor implements Watcher {
         process0(event,attachment);
     }
 
-    protected abstract void process0(WatchedEvent event,Object attachment);
+    protected abstract void process0(WatchedEvent event,@Nullable Object attachment);
 }
