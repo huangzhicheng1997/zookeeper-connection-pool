@@ -1,2 +1,2 @@
 # zookeeper-connection-pool
-管理zookeeper连接的连接池
+由于TCP协议的带宽的局限性，所以可以使用多个客户端连接来充分利用网络带宽。此项目主要是用来管理Zookeeper连接，连接的负载均衡。在zookeeper原生java客户端的基础上，抽象出ZookeeperConnection，以及ZookeeperConntionPool。用户只需在yml配置文件中配置最大连接数，以及序列化器即可使用，目前序列化器提供MessagePack以及Kryo两种方式。
