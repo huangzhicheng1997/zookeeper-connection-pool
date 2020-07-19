@@ -16,15 +16,17 @@ public abstract class WatcherAdaptor implements Watcher {
      */
     private Object attachment;
 
-    public Watcher setAttachment(Object attachment) {
+    public WatcherAdaptor() {
+    }
+
+    public void setAttachment(Object attachment) {
         this.attachment = attachment;
-        return this;
     }
 
     @Override
     public void process(WatchedEvent event) {
-        process0(event,attachment);
+        process0(event, attachment);
     }
 
-    protected abstract void process0(WatchedEvent event,@Nullable Object attachment);
+    protected abstract void process0(WatchedEvent event, @Nullable Object attachment);
 }

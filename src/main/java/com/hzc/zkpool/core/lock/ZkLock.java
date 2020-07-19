@@ -1,10 +1,8 @@
 package com.hzc.zkpool.core.lock;
 
-import com.hzc.zkpool.core.zkpool.ZookeeperConnectionPool;
 import org.apache.zookeeper.KeeperException;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author: hzc
@@ -14,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public interface ZkLock {
 
 
-    boolean tryAcquire(Long timeout, TimeUnit timeUnit) throws InterruptedException, IOException, KeeperException;
+    boolean lock() throws InterruptedException, IOException, KeeperException;
 
     void release();
 

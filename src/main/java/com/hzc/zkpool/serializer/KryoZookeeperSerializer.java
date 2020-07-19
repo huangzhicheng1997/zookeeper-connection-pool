@@ -15,7 +15,14 @@ public class KryoZookeeperSerializer implements ZookeeperSerializer {
 
     @Override
     public byte[] serializer(Object data)  {
-        if (!(data instanceof Byte) && !(data instanceof Short) && !(data instanceof Integer) && !(data instanceof Long) && !(data instanceof Float) && !(data instanceof Double) && !(data instanceof Boolean) && !(data instanceof CharSequence)){
+        if (!(data instanceof Byte)
+                && !(data instanceof Short)
+                && !(data instanceof Integer)
+                && !(data instanceof Long)
+                && !(data instanceof Float)
+                && !(data instanceof Double)
+                && !(data instanceof Boolean)
+                && !(data instanceof CharSequence)){
             kryoSerializer.register(data.getClass());
         }
 

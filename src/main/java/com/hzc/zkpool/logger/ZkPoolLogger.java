@@ -28,6 +28,10 @@ public class ZkPoolLogger {
         logger.info(replace);
     }
 
+    public static void info(String msg) {
+        logger.info(msg);
+    }
+
     public static void debug(String msg,Object o){
         String replace = msg.replace("{}", o.toString());
         logger.debug(replace);

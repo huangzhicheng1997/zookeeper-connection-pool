@@ -107,11 +107,11 @@ public class ZookeeperConnection {
         }
 
         try {
-            zooKeeper.create(path, zookeeperSerializer.serializer(data), acl, CreateMode.PERSISTENT);
+            zooKeeper.create(path,null, acl, CreateMode.PERSISTENT);
         }catch (KeeperException.NodeExistsException ignored){
 
         }
-        return doCreate(nextDir(path, sourcePath), sourcePath, null, acl, createMode);
+        return doCreate(nextDir(path, sourcePath), sourcePath, data, acl, createMode);
     }
 
 
@@ -177,6 +177,11 @@ public class ZookeeperConnection {
      */
     public Stat exists(String path, Watcher watcher) throws KeeperException, InterruptedException {
         return zooKeeper.exists(path, watcher);
+    }
+
+    public Stat exists(String path, WatcherAdaptor watcherAdaptor,Object attachment) throws KeeperException, InterruptedException {
+        watcherAdaptor.setAttachment(attachment);
+        return zooKeeper.exists(path, watcherAdaptor);
     }
 
     public Stat exist(String path) throws KeeperException, InterruptedException {
