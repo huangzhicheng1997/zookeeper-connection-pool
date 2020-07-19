@@ -91,7 +91,7 @@ public class DistributedZkLock implements ZkLock {
     }
 
 
-    private static void getNode(String node, int index, StringBuilder sb) {
+    private  void getNode(String node, int index, StringBuilder sb) {
         if (node.charAt(index) == '/') {
             return;
         }
@@ -127,118 +127,4 @@ public class DistributedZkLock implements ZkLock {
             e.printStackTrace();
         }
     }
-
-
-//    private String node;
-//
-//    private ThreadLocal<String> eNod = new ThreadLocal<>();
-//
-//    private String rootPath = "/lock";
-//
-//    private ThreadLocal<CountDownLatch> countDownLatchThreadLocal = new ThreadLocal<>();
-//
-//    private ZookeeperConnection zookeeperConnection;
-//
-//
-//    public DistributedZkLock(ZookeeperConnectionPool zookeeperConnectionPool, String lockName) {
-//        if (!lockName.startsWith("/")) {
-//            throw new IllegalArgumentException("lockName illegal, name must start with '/'");
-//        }
-//
-//        try {
-//            this.zookeeperConnection = zookeeperConnectionPool.getConnection();
-//        } catch (IOException | InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        this.node = rootPath + lockName;
-//    }
-//
-//    public void registerZkClientPool(ZookeeperConnectionPool zookeeperConnectionPool) throws IOException, InterruptedException {
-//        zookeeperConnection = zookeeperConnectionPool.getConnection();
-//    }
-//
-//    public void getLock(String lockName) throws InterruptedException, IOException, KeeperException {
-//        this.node = lockName;
-//    }
-//
-//    @Override
-//    public boolean tryAcquire(Long timeout, TimeUnit timeUnit) {
-//
-//        try {
-//            Semaphore semaphore = new Semaphore(1);
-//            semaphore.acquire(1);
-//            eNod.set(zookeeperConnection.create(node, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL_SEQUENTIAL));
-//            return check(semaphore,eNod.get());
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-//    }
-//
-//    private boolean check(Semaphore semaphore,String mNode) throws KeeperException, InterruptedException {
-//       CountDownLatch countDownLatch=new CountDownLatch(1);
-//        Stat stat = zookeeperConnection.exists(mNode, new WatcherAdaptor() {
-//            @Override
-//            protected void process0(WatchedEvent event, Object attachment) {
-//                if (Event.EventType.NodeDeleted.equals(event.getType())) {
-//                    countDownLatch.countDown();
-//                    System.out.println("xxxx");
-//                }
-//            }
-//        }, this);
-//
-//        String minNode = getMinNode();
-//        String endNode = getEndNode();
-//        if (endNode.equals(minNode)) {
-//            ZkPoolLogger.info("获取锁成功");
-//            return true;
-//        }
-//
-//        countDownLatch.await();
-//        System.out.println("xxxxxa");
-//        return check(semaphore,minNode);
-//    }
-//
-//    private String getMinNode() throws KeeperException, InterruptedException {
-//        String lastNode = getLastNode();
-//        List<String> children = zookeeperConnection.getChildren(lastNode, null);
-//        return Collections.min(children, (o1, o2) -> {
-//            if (o1.compareTo(o2) < 0) {
-//                return -1;
-//            }
-//            return 1;
-//        });
-//    }
-//
-//    private String getLastNode() {
-//        String[] nodes = node.split("/");
-//        StringBuilder sb = new StringBuilder();
-//        for (int i = 0; i < nodes.length - 1; i++) {
-//            if (!StringUtils.isEmpty(nodes[i])) {
-//                sb.append("/").append(nodes[i]);
-//            }
-//        }
-//        return sb.toString();
-//    }
-//
-//    private String getEndNode() {
-//        String[] nodes = eNod.get().split("/");
-//        return nodes[nodes.length - 1];
-//    }
-//
-//    @Override
-//    public void release() {
-//        try {
-//            zookeeperConnection.deleteNode(eNod.get(), -1);
-//            zookeeperConnection.release();
-//            ZkPoolLogger.info("释放锁成功");
-//        } catch (KeeperException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-
 }
